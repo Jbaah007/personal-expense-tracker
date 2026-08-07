@@ -1,3 +1,5 @@
+require('dotenv').config({ path: require('node:path').resolve(__dirname, '..', '.env') });
+
 const express = require('express');
 const cors = require('cors');
 const { createExpenseStore } = require('./db');
