@@ -6,6 +6,8 @@ import { getFilteredExpenses } from './expenseFilters'
 import { getCategoryBadge } from './categoryStyles'
 import { getRecentExpenses, getSpendingTrend } from './expenseAnalytics'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
 const initialFormState = {
   title: '',
   amount: '',
@@ -37,21 +39,21 @@ function App() {
   )
 
   function loadExpenses() {
-    fetch('http://localhost:3001/api/expenses')
+    fetch(`${API_BASE_URL}/api/expenses`)
       .then((response) => response.json())
       .then((data) => setExpenses(data))
       .catch(() => setExpenses([]))
   }
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/health')
+    fetch(`${API_BASE_URL}/api/health`)
       .then((response) => response.json())
       .then((data) => setStatus(data.message))
       .catch(() => setStatus('Backend not reachable yet'))
 
     loadExpenses()
 
-    fetch('http://localhost:3001/api/settings/budget')
+    fetch(`${API_BASE_URL}/api/settings/budget`)
       .then((response) => response.json())
       .then((data) => {
         if (data.budget !== null && data.budget !== undefined) {
@@ -70,7 +72,7 @@ function App() {
     event.preventDefault()
 
     try {
-      const response = await fetch('http://localhost:3001/api/settings/budget', {
+      const response = await fetch(`${API_BASE_URL}/api/settings/budget`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -132,8 +134,8 @@ function App() {
       }
 
       const url = editingId
-        ? `http://localhost:3001/api/expenses/${editingId}`
-        : 'http://localhost:3001/api/expenses'
+        ? `${API_BASE_URL}/api/expenses/${editingId}`
+        : `${API_BASE_URL}/api/expenses`
 
       const response = await fetch(url, requestOptions)
 
@@ -175,7 +177,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/api/expenses/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/expenses/${id}`, {
         method: 'DELETE',
       })
 
