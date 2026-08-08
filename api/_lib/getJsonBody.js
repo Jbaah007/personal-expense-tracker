@@ -3,14 +3,48 @@ async function getJsonBody(req) {
     return req.body;
   }
 
+  if (typeof req.body === 'string') {
+    const trimmed = req.body.trim();
+    if (!trimmed) {
+      return {};
+    }
+
+    try {
+      return JSON.parse(trimmed);
+    } catch (error) {
+      return {};
+    }
+  }
+
+  if (Buffer.isBuffer(req.body)) {
+    const trimmed = req.body.toString('utf8').trim();
+    if (!trimmed) {
+      return {};
+    }
+
+    try {
+      return JSON.parse(trimmed);
+    } catch (error) {
+      return {};
+    }
+  }
+
   if (req.method !== 'POST' && req.method !== 'PUT') {
+    return {};
+  }
+
+  if (!req || typeof req !== 'object' || !Symbol.asyncIterator in req) {
     return {};
   }
 
   const chunks = [];
 
-  for await (const chunk of req) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  try {
+    for await (const chunk of req) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+  } catch (error) {
+    return {};
   }
 
   if (chunks.length === 0) {

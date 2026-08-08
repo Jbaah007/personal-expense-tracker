@@ -1,7 +1,26 @@
+const path = require('node:path');
+const dotenv = require('dotenv');
 const { Pool } = require('pg');
 
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
+
+function resolveDatabaseUrl(config = {}, env = process.env) {
+  if (config.databaseUrl) {
+    return config.databaseUrl;
+  }
+
+  return (
+    env.DATABASE_URL ||
+    env.POSTGRES_URL ||
+    env.POSTGRES_PRISMA_URL ||
+    env.POSTGRES_URL_NON_POOLING ||
+    env.NEON_DATABASE_URL ||
+    null
+  );
+}
+
 function createExpenseStore(config = {}) {
-  const databaseUrl = config.databaseUrl || process.env.DATABASE_URL;
+  const databaseUrl = resolveDatabaseUrl(config);
   const useSsl = Boolean(databaseUrl && /render\.com|neon\.tech/i.test(databaseUrl));
 
   const pool = new Pool({
@@ -93,4 +112,4 @@ function createExpenseStore(config = {}) {
   return { listExpenses, createExpense, updateExpense, deleteExpense, getSetting, setSetting, close };
 }
 
-module.exports = { createExpenseStore };
+module.exports = { createExpenseStore, resolveDatabaseUrl };
