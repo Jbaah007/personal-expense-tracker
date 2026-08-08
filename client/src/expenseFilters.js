@@ -1,5 +1,5 @@
-export function getFilteredExpenses(expenses, searchTerm, categoryFilter, sortKey, sortOrder) {
-  return expenses
+export function getFilteredExpenses(expenses = [], searchTerm, categoryFilter, sortKey, sortOrder) {
+  return (Array.isArray(expenses) ? expenses : [])
     .filter((expense) => {
       const matchesSearch = expense.title.toLowerCase().includes(searchTerm.toLowerCase())
       const matchesCategory = categoryFilter === 'all' || expense.category === categoryFilter

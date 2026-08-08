@@ -3,8 +3,8 @@ function parseDateParts(dateValue) {
   return { year, month: month - 1, day }
 }
 
-export function getRecentExpenses(expenses, count = 5) {
-  return [...expenses]
+export function getRecentExpenses(expenses = [], count = 5) {
+  return [...(Array.isArray(expenses) ? expenses : [])]
     .sort((left, right) => {
       const leftDate = parseDateParts(left.date)
       const rightDate = parseDateParts(right.date)
@@ -15,11 +15,11 @@ export function getRecentExpenses(expenses, count = 5) {
     .slice(0, count)
 }
 
-export function getSpendingTrend(expenses, referenceDate = new Date()) {
+export function getSpendingTrend(expenses = [], referenceDate = new Date()) {
   const currentYear = referenceDate.getFullYear()
   const currentMonth = referenceDate.getMonth()
 
-  const entries = expenses
+  const entries = (Array.isArray(expenses) ? expenses : [])
     .filter((expense) => {
       const { year, month } = parseDateParts(expense.date)
       return year === currentYear && month === currentMonth

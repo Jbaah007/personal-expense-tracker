@@ -3,14 +3,16 @@ function parseDateParts(dateValue) {
   return { year, month: month - 1, day }
 }
 
-export function getMonthSummary(expenses, referenceDate = new Date()) {
+export function getMonthSummary(expenses = [], referenceDate = new Date()) {
   const currentYear = referenceDate.getFullYear()
   const currentMonth = referenceDate.getMonth()
 
-  const monthlyExpenses = expenses.filter((expense) => {
-    const { year, month } = parseDateParts(expense.date)
-    return year === currentYear && month === currentMonth
-  })
+  const monthlyExpenses = Array.isArray(expenses)
+    ? expenses.filter((expense) => {
+        const { year, month } = parseDateParts(expense.date)
+        return year === currentYear && month === currentMonth
+      })
+    : []
 
   const total = monthlyExpenses.reduce((sum, expense) => {
     return sum + Number(expense.amount || 0)

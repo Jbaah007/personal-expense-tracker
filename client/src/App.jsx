@@ -41,14 +41,21 @@ function App() {
   function loadExpenses() {
     fetch(`${API_BASE_URL}/api/expenses`)
       .then((response) => response.json())
-      .then((data) => setExpenses(data))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setExpenses(data)
+          return
+        }
+
+        setExpenses([])
+      })
       .catch(() => setExpenses([]))
   }
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/health`)
       .then((response) => response.json())
-      .then((data) => setStatus(data.message))
+      .then((data) => setStatus(data?.message || 'Backend is responding'))
       .catch(() => setStatus('Backend not reachable yet'))
 
     loadExpenses()
