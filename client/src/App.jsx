@@ -6,7 +6,7 @@ import { getFilteredExpenses } from './expenseFilters'
 import { getCategoryBadge } from './categoryStyles'
 import { getRecentExpenses, getSpendingTrend } from './expenseAnalytics'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 const initialFormState = {
   title: '',

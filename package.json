@@ -1,0 +1,16 @@
+{
+  "name": "personal-expense-tracker-root",
+  "private": true,
+  "workspaces": [
+    "client"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=client",
+    "dev": "npm run dev --workspace=client",
+    "test": "npm run test --workspace=client"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.2",
+    "pg": "^8.2.0"
+  }
+}

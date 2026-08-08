@@ -2,13 +2,14 @@ const { Pool } = require('pg');
 
 function createExpenseStore(config = {}) {
   const databaseUrl = config.databaseUrl || process.env.DATABASE_URL;
+  const useSsl = Boolean(databaseUrl && /render\.com|neon\.tech/i.test(databaseUrl));
 
   const pool = new Pool({
     connectionString: databaseUrl,
-    ssl: databaseUrl && databaseUrl.includes('render.com') ? { rejectUnauthorized: false } : false,
+    ssl: useSsl ? { rejectUnauthorized: false } : false,
   });
 
-  async function initialize() {
+  const initializationPromise = (async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS expenses (
         id SERIAL PRIMARY KEY,
@@ -25,14 +26,18 @@ function createExpenseStore(config = {}) {
         value TEXT NOT NULL
       )
     `);
-  }
-
-  initialize().catch((error) => {
+  })().catch((error) => {
     console.error('Database initialization failed:', error.message);
     console.error('Set DATABASE_URL to a valid PostgreSQL connection string before starting the server.');
+    throw error;
   });
 
+  async function ensureInitialized() {
+    await initializationPromise;
+  }
+
   async function listExpenses() {
+    await ensureInitialized();
     const result = await pool.query(
       'SELECT id, title, amount, category, date FROM expenses ORDER BY date DESC, id DESC',
     );
@@ -40,6 +45,7 @@ function createExpenseStore(config = {}) {
   }
 
   async function createExpense(expense) {
+    await ensureInitialized();
     const result = await pool.query(
       'INSERT INTO expenses (title, amount, category, date) VALUES ($1, $2, $3, $4) RETURNING id, title, amount, category, date',
       [expense.title, expense.amount, expense.category, expense.date],
@@ -49,6 +55,7 @@ function createExpenseStore(config = {}) {
   }
 
   async function updateExpense(id, expense) {
+    await ensureInitialized();
     const result = await pool.query(
       'UPDATE expenses SET title = $1, amount = $2, category = $3, date = $4 WHERE id = $5 RETURNING id, title, amount, category, date',
       [expense.title, expense.amount, expense.category, expense.date, id],
@@ -58,16 +65,19 @@ function createExpenseStore(config = {}) {
   }
 
   async function deleteExpense(id) {
+    await ensureInitialized();
     const result = await pool.query('DELETE FROM expenses WHERE id = $1 RETURNING id', [id]);
     return result.rows[0] || { id };
   }
 
   async function getSetting(key) {
+    await ensureInitialized();
     const result = await pool.query('SELECT value FROM settings WHERE key = $1', [key]);
     return result.rows[0] ? result.rows[0].value : null;
   }
 
   async function setSetting(key, value) {
+    await ensureInitialized();
     const result = await pool.query(
       'INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value RETURNING key, value',
       [key, value],
