@@ -1,6 +1,6 @@
 # Personal Expense Tracker
 
-Live app: https://personal-expense-tracker.vercel.app
+Live app: https://personal-expense-tracker-client-53iz-o4v1rzjps.vercel.app/
 
 A clean, responsive web app for tracking personal expenses with filtering, sorting, budgeting, and analytics.
 
@@ -35,7 +35,7 @@ This app uses Vercel serverless routes for all expense CRUD operations. The SPA 
 2. Create a new Vercel project from the repository.
 3. Set the environment variables:
    - DATABASE_URL=your-neon-postgres-connection-string
-   - VITE_API_URL=https://personal-expense-tracker.vercel.app
+   - VITE_API_URL=https://personal-expense-tracker-client-53iz-o4v1rzjps.vercel.app/
 4. Deploy.
 5. Verify the live app can complete these requests:
    - `GET /api/expenses`
