@@ -91,7 +91,7 @@ function createExpenseStore(config = {}) {
   async function deleteExpense(id) {
     await ensureInitialized();
     const result = await pool.query('DELETE FROM expenses WHERE id = $1 RETURNING id', [id]);
-    return result.rows[0] || { id };
+    return result.rows[0] || null;
   }
 
   async function getSetting(key) {
