@@ -30,5 +30,6 @@ A clean, responsive web app for tracking personal expenses with filtering, sorti
 2. Create a new Vercel project from the repository.
 3. Set the environment variables:
    - DATABASE_URL=your-neon-postgres-connection-string
-   - VITE_API_URL=https://your-vercel-app-name.vercel.app
+   - VITE_API_URL=ains
+personal-expense-tracker-client-53i-tau.vercel.app
 4. Deploy.
