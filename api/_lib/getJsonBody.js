@@ -33,7 +33,7 @@ async function getJsonBody(req) {
     return {};
   }
 
-  if (!req || typeof req !== 'object' || !Symbol.asyncIterator in req) {
+  if (!req || typeof req !== 'object' || !(Symbol.asyncIterator in req)) {
     return {};
   }
 

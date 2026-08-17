@@ -28,6 +28,8 @@ function createExpenseStore(config = {}) {
     ssl: useSsl ? { rejectUnauthorized: false } : false,
   });
 
+  let initializationError = null;
+
   const initializationPromise = (async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS expenses (
@@ -46,13 +48,16 @@ function createExpenseStore(config = {}) {
       )
     `);
   })().catch((error) => {
+    initializationError = error;
     console.error('Database initialization failed:', error.message);
     console.error('Set DATABASE_URL to a valid PostgreSQL connection string before starting the server.');
-    throw error;
   });
 
   async function ensureInitialized() {
     await initializationPromise;
+    if (initializationError) {
+      throw initializationError;
+    }
   }
 
   async function listExpenses() {

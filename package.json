@@ -5,9 +5,14 @@
     "client"
   ],
   "scripts": {
+    "dev:client": "npm run dev --workspace=client",
+    "dev:server": "npm run dev --prefix server",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "build": "npm run build --workspace=client",
-    "dev": "npm run dev --workspace=client",
     "test": "npm run test --workspace=client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   },
   "dependencies": {
     "dotenv": "^16.4.2",
