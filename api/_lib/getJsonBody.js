@@ -29,7 +29,7 @@ async function getJsonBody(req) {
     }
   }
 
-  if (req.method !== 'POST' && req.method !== 'PUT') {
+  if (req.method !== 'POST' && req.method !== 'PUT' && req.method !== 'PATCH' && req.method !== 'DELETE') {
     return {};
   }
 

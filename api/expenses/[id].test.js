@@ -58,6 +58,21 @@ test('update handler falls back to id from URL path', async () => {
   assert.equal(res.payload.id, 42);
 });
 
+test('patch handler reads JSON from the request body and keeps the URL id', async () => {
+  const handler = loadHandler({
+    parsedBody: { title: 'Dinner', amount: '18.50', category: 'Food', date: '2026-08-17' },
+    updateExpense: async (id, payload) => ({ id, title: payload.title, amount: payload.amount, category: payload.category, date: payload.date }),
+    deleteExpense: async () => ({ id: 1 }),
+  });
+  const res = createResponse();
+
+  await handler({ method: 'PATCH', url: '/api/expenses/24', body: { title: 'Dinner', amount: '18.50', category: 'Food', date: '2026-08-17' } }, res);
+
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.payload.id, 24);
+  assert.equal(res.payload.title, 'Dinner');
+});
+
 test('delete handler returns 400 when expense id is missing', async () => {
   const handler = loadHandler({
     updateExpense: async () => undefined,

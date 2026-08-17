@@ -6,11 +6,14 @@ const store = createExpenseStore();
 function getExpenseId(req, body = {}) {
   const queryId = req?.query?.id;
   const fallbackId = body?.id;
-  const pathId = typeof req?.url === 'string'
-    ? req.url.split('?')[0].split('/').filter(Boolean).at(-1)
-    : undefined;
+  const rawUrl = typeof req?.url === 'string' ? req.url : '';
+  const pathname = rawUrl.split('?')[0] || req?.originalUrl || '/';
+  const pathId = pathname.split('/').filter(Boolean).at(-1);
 
-  const rawId = Array.isArray(queryId) ? queryId[0] : queryId || fallbackId || pathId;
+  const rawId = Array.isArray(queryId)
+    ? queryId[0]
+    : queryId || fallbackId || pathId;
+
   const id = Number(rawId);
 
   return Number.isInteger(id) && id > 0 ? id : null;
@@ -38,7 +41,7 @@ module.exports = async function handler(req, res) {
     if (req.method === 'DELETE') {
       const expense = await store.deleteExpense(id);
 
-      if (!expense || expense.id !== id) {
+      if (!expense || Number(expense.id) !== Number(id)) {
         return res.status(404).json({ error: 'Expense not found' });
       }
 
